@@ -11,13 +11,13 @@ boundary = TEQIndex.get_dynamic_boundary(df)  # Dynamically determine the spatia
 teq_index = TEQIndex(boundary)
 
 # Step 3: First Pass – Insert Only Locations into the Quadtree
-print("\n⏳ First Pass: Inserting Locations into TEQ (Spatial Indexing)...")
+print("\n First Pass: Inserting Locations into TEQ (Spatial Indexing)...")
 for row in df.itertuples(index=False):
     teq_index.insert_location(row.id, row.longitude, row.latitude)
 
 # Step 4: Second Pass – Insert Keywords into the Inverted Index
-print("\n⏳ Second Pass: Inserting Textual Data into TEQ (Keyword Indexing)...")
+print("\n Second Pass: Inserting Textual Data into TEQ (Keyword Indexing)...")
 for row in df.itertuples(index=False):
     teq_index.insert_text(row.id, row.keywords)
 
-print("\n✅ TEQ Index Built Successfully!")
+print("\n TEQ Index Built Successfully!")
