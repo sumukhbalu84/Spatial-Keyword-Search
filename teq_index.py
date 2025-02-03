@@ -22,6 +22,23 @@ class Tweet:
 
 
 class Quadtree:
+    """This function retrieves a tweet within a given radius"""
+    def range_query(self, center_x, center_y, radius):
+        """Finds all tweets within the given radius from (center_x, center_y)."""
+        results = []
+
+        # Check tweets in this node
+        for tweet in self.tweets:
+            distance = ((tweet.x - center_x) ** 2 + (tweet.y - center_y) ** 2) ** 0.5  # Euclidean Distance
+            if distance <= radius:
+                results.append(tweet)
+
+        # Recursively search child nodes
+        if self.divided:
+            for child in self.children:
+                results.extend(child.range_query(center_x, center_y, radius))
+
+        return results
     """A simple Quadtree for spatial partitioning of tweets."""
     def __init__(self, boundary, capacity=4):
         self.boundary = boundary  # The region this Quadtree covers
@@ -89,16 +106,19 @@ class TEQIndex:
     def __init__(self, boundary, capacity=4):
         self.quadtree = Quadtree(boundary, capacity)  # Spatial index
         self.inverted_index = InvertedIndex()  # Textual index
+        self.tweet_store = {}  # Stores all tweet objects by ID
 
     def insert_location(self, tweet_id, lon, lat):
         """First Pass: Insert only location data into the Quadtree."""
         tweet = Tweet(tweet_id, set(), lon, lat)  # Empty keyword set
         self.quadtree.insert(tweet)  # Only store spatial data
+        self.tweet_store[tweet_id] = tweet  # Store tweet object for future updates
 
     def insert_text(self, tweet_id, keywords):
         """Second Pass: Insert only keyword data into the Inverted Index."""
-        tweet = Tweet(tweet_id, keywords, 0, 0)  # No spatial data
-        self.inverted_index.add_tweet(tweet)  # Store only textual data
+        if tweet_id in self.tweet_store:  # Ensure the tweet exists
+            self.tweet_store[tweet_id].keywords = keywords  # Update tweet with keywords
+        self.inverted_index.add_tweet(self.tweet_store[tweet_id])  # Store only textual data
 
     @staticmethod
     def get_dynamic_boundary(df):
