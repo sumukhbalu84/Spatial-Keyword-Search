@@ -81,7 +81,7 @@ class Quadtree:
         self.divided = True
 
 class InvertedIndex:
-    """Maps keywords to a list of tweet IDs for fast text searches."""
+    """Maps keywords to a set of tweet IDs for fast text searches."""
     def __init__(self):
         self.index = {}
 
@@ -89,17 +89,26 @@ class InvertedIndex:
         """Adds a tweet's keywords to the inverted index."""
         for keyword in tweet.keywords:
             if keyword not in self.index:
-                self.index[keyword] = []
-            self.index[keyword].append(tweet.id)
+                self.index[keyword] = set()
+            self.index[keyword].add(tweet.id)
 
-    def search(self, query_keywords):
-        """Finds tweet IDs that match the given keywords."""
+    def search(self, query_keywords, exclude_keywords=None):
+        """Finds tweet IDs that match the given keywords and excludes unwanted keywords."""
         result = set()
+
+        # Find tweets that match positive query keywords
         for keyword in query_keywords:
             if keyword in self.index:
-                result.update(self.index[keyword])
-        return result  # Returns a set of tweet IDs
+                result = result | set(self.index[keyword])  # Ensure we perform union.
 
+        # Remove tweets that contain excluded keywords
+        if exclude_keywords:
+            for keyword in exclude_keywords:
+                if keyword in self.index:
+                    result = result - set(self.index[keyword])  # Ensure we perform set difference
+
+        return result
+    
 class TEQIndex:
     """Combines a Quadtree for spatial partitioning and an Inverted Index for keyword searches."""
     
