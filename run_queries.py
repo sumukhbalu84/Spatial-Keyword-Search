@@ -1,24 +1,34 @@
-from teq_index import TEQIndex
+# from teq_index import TEQIndex
+# from Dataset_Loader import load_tweet_dataset
 from Power import execute_power_tkqn
-from Dataset_Loader import load_tweet_dataset
+import pickle
+# # Load dataset
+# DATASET_PATH = "/Users/sumukhbalu/Documents/UCR/Quarter-2/Spatial Computing/Project/U-ask_data/tweet2000000"
+# df = load_tweet_dataset(DATASET_PATH)
 
-# Load dataset
-DATASET_PATH = "/Users/sumukhbalu/Documents/UCR/Quarter-2/Spatial Computing/Project/U-ask_data/tweet2000000"
-df = load_tweet_dataset(DATASET_PATH)
+# # Define TEQ Index
+# boundary = TEQIndex.get_dynamic_boundary(df)
+# teq_index = TEQIndex(boundary)
 
-# Define TEQ Index
-boundary = TEQIndex.get_dynamic_boundary(df)
-teq_index = TEQIndex(boundary)
+# # Insert tweets into TEQ Index (Two-Pass Method)
+# print("\nBuilding TEQ Index...")
+# for _, row in df.iterrows():
+#     teq_index.insert_location(row.id, row.longitude, row.latitude)
 
-# Insert tweets into TEQ Index (Two-Pass Method)
-print("\nBuilding TEQ Index...")
-for _, row in df.iterrows():
-    teq_index.insert_location(row.id, row.longitude, row.latitude)
+# for _, row in df.iterrows():
+#     teq_index.insert_text(row.id, row.keywords)
 
-for _, row in df.iterrows():
-    teq_index.insert_text(row.id, row.keywords)
+# print("\nTEQ Index Built Successfully!")
 
-print("\nTEQ Index Built Successfully!")
+# ## SAVE TEQ INDEX TO A FILE 
+# import pickle
+# with open("teq_index.pkl", "wb") as f:
+#     pickle.dump(teq_index, f)
+## ALL THIS HAS BEEN DONE ALREADY IN THE SAVE_TEQ_INDEX.PY FILE
+
+# Load TEQ Index from a file
+with open("./INDEXES/teq_index_2M.pkl", "rb") as f:
+    teq_index = pickle.load(f)
 
 # Define test queries
 query_tests = [
